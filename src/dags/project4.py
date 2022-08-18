@@ -71,22 +71,38 @@ def get_api_response(conn_name, api_url, api_headers):
 # однотипная работа перелить api-операцию в stg-приёмник
 # пролистыванием до упора с апсертом по object_id
 def fill_stg(api_operation_name, table_name, id_field):
+    # Хорошей практикой является логирование входных параметров функции
+    log.debug("fill_stg('{}', '{}', '{}')",
+        api_operation_name, table_name, id_field)
+
+    # Я бы вынес ключ в подключения, хранить его в даге небезопасно
+    conn = BaseHook.get_connection('http_conn_id')
+    x_api_key = conn.password
+
     continue_marker = True # do-while
     next_offset = 0
     limit = 50
     inf_counter = 0
     while continue_marker is True and inf_counter < 100:
-        # sort_field=id&
+        # Возможно есть смысл логировать значение офсета на каждом этапе
+        log.debug("going to the next iteration of {} with limit {}, offset {}",
+            api_operation_name, limit, next_offset)
+
         api_url = "/{}?sort_direction=asc&limit={}&offset={}".format(
             api_operation_name, limit, next_offset)
         api_headers={
-            "X-API-KEY": "25c27781-8fde-4b30-a22e-524044a7580f",
+            "X-API-KEY": x_api_key,
             "X-Nickname": "sergei_baranov",
             "X-Cohort": "1"
         }
         json_resp = get_api_response('http_conn_id', api_url, api_headers)
+        response_len = len(json_resp)
 
-        if len(json_resp) > 0:
+        # Я бы тут тоже какое-нибудь сообщение в лог вывел,
+        # что пришёл пустой ответ (len(json_resp))
+        log.debug("got response with {} elements length", response_len)
+
+        if response_len > 0:
             continue_marker = True
             next_offset += limit
             inf_counter += 1

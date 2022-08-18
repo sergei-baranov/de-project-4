@@ -5,8 +5,9 @@
 1. Postgres в DWH - connection `PG_WAREHOUSE_CONNECTION`
    - создаём руками в соответствии с настройками из уроков спринта
 2. Параметры для доступа к источникам по api `http_conn_id` (http):
-   - Host: `https://d5d04q7d963eapoepsqr.apigw.yandexcloud.net`
-   - X-Api_Key и т.п. жёстко пишем в питоновском коде DAG-а
+   - `Host`: `https://d5d04q7d963eapoepsqr.apigw.yandexcloud.net`
+   - `X-Api-Key` внёс в `password` подключения
+   - Остальное (когорта и т.п.) жёстко пишем в питоновском коде DAG-а
 
 ## Структура таблиц в DWH
 
